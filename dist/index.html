@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>POMALÚ - Catálogo Mayorista</title>
+<meta name="description" content="Catálogo de materiales y herrajes. Armá tu pedido y enviámelo por WhatsApp o email.">
+<meta name="theme-color" content="#f07d7c">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">PM</span>
+      <div>
+        <div class="brand-name" id="brandName">Pomalú</div>
+        <div class="brand-tag">Materiales y herrajes — Mayorista</div>
+      </div>
+    </div>
+    <button class="cart-btn" id="cartBtn" aria-label="Ver pedido">
+      🛒 <span id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="min-order-banner" id="minOrderBanner"></div>
+
+<main class="main">
+  <div class="controls">
+    <input type="search" id="searchInput" placeholder="Buscar producto o código..." class="search-input" autocomplete="off">
+    <select id="categorySelect" class="category-select">
+      <option value="">Todas las categorías</option>
+    </select>
+  </div>
+
+  <div id="resultsInfo" class="results-info"></div>
+
+  <div id="grid" class="grid"></div>
+
+  <div class="load-more-wrap">
+    <button id="loadMoreBtn" class="btn btn-secondary" hidden>Ver más productos</button>
+  </div>
+  <div id="emptyState" class="empty-state" hidden>No encontramos productos con ese filtro.</div>
+</main>
+
+<!-- Drawer del carrito -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="cartDrawer" aria-hidden="true">
+  <div class="drawer-header">
+    <h2>Tu pedido</h2>
+    <button class="icon-btn" id="closeCartBtn" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="drawer-body" id="cartItems"></div>
+  <div class="drawer-footer">
+    <div class="cart-summary" id="cartSummary"></div>
+    <button class="btn btn-primary btn-block" id="goCheckoutBtn">Continuar pedido</button>
+  </div>
+</aside>
+
+<!-- Modal de checkout -->
+<div class="modal-overlay" id="checkoutOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h2>Datos para tu pedido</h2>
+      <button class="icon-btn" id="closeCheckoutBtn" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="checkoutForm" class="modal-body">
+      <label>Nombre y apellido
+        <input type="text" name="nombre" required>
+      </label>
+      <label>Negocio / local
+        <input type="text" name="negocio">
+      </label>
+      <label>Localidad
+        <input type="text" name="localidad" required placeholder="Cardales, Pilar, etc.">
+      </label>
+      <label>Teléfono
+        <input type="tel" name="telefono" required>
+      </label>
+      <label>Email
+        <input type="email" name="email">
+      </label>
+      <label>Comentario (opcional)
+        <textarea name="comentario" rows="2"></textarea>
+      </label>
+      <div class="checkout-summary" id="checkoutSummary"></div>
+      <div class="checkout-actions">
+        <button type="submit" class="btn btn-whatsapp" name="via" value="whatsapp">Enviar por WhatsApp</button>
+        <button type="submit" class="btn btn-secondary" name="via" value="email">Enviar por Email</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
