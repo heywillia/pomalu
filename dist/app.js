@@ -87,7 +87,7 @@ function applyFilters() {
 function renderGrid() {
   const grid = $("#grid");
   const slice = state.filtered.slice(0, state.visibleCount);
-  grid.innerHTML = slice.map(cardHTML).join("");
+  grid.innerHTML = slice.map(rowHTML).join("");
   $("#emptyState").hidden = state.filtered.length > 0;
   $("#loadMoreBtn").hidden = state.visibleCount >= state.filtered.length;
 
@@ -109,26 +109,32 @@ function renderGrid() {
   });
 }
 
-function cardHTML(p) {
+function rowHTML(p) {
   const inCart = !!state.cart[p.id];
   const img = p.img
     ? `<img src="images/${p.img}" loading="lazy" alt="${escapeHTML(p.desc)}">`
-    : `<div class="card-noimg">Sin foto<br>disponible</div>`;
+    : `<div class="row-noimg">Sin foto</div>`;
   return `
-  <div class="card">
-    <div class="card-img">${img}</div>
-    <div class="card-body">
-      <div class="card-code">${escapeHTML(p.code)}</div>
-      <div class="card-desc">${escapeHTML(p.desc)}</div>
-      <div class="card-price">${money(p.price)}</div>
-      <div class="qty-row">
-        <button class="qty-btn" data-step="${p.id}" data-dir="-1" type="button">−</button>
-        <input class="qty-input" type="number" min="1" value="1" data-qty="${p.id}">
-        <button class="qty-btn" data-step="${p.id}" data-dir="1" type="button">+</button>
+  <div class="row">
+    <div class="row-thumb">${img}</div>
+    <div class="row-main">
+      <div class="row-top">
+        <div class="row-text">
+          <div class="row-code">${escapeHTML(p.code)}</div>
+          <div class="row-desc">${escapeHTML(p.desc)}</div>
+        </div>
+        <div class="row-price">${money(p.price)}</div>
       </div>
-      <button class="add-btn ${inCart ? "in-cart" : ""}" data-add="${p.id}" type="button">
-        ${inCart ? "✓ En el pedido — agregar más" : "Agregar al pedido"}
-      </button>
+      <div class="row-controls">
+        <div class="qty-row">
+          <button class="qty-btn" data-step="${p.id}" data-dir="-1" type="button">−</button>
+          <input class="qty-input" type="number" min="1" value="1" data-qty="${p.id}">
+          <button class="qty-btn" data-step="${p.id}" data-dir="1" type="button">+</button>
+        </div>
+        <button class="add-btn ${inCart ? "in-cart" : ""}" data-add="${p.id}" type="button">
+          ${inCart ? "✓ Agregado" : "Agregar"}
+        </button>
+      </div>
     </div>
   </div>`;
 }
@@ -225,9 +231,17 @@ function renderCartUI() {
   const min = state.catalog ? state.catalog.min_order_suggested : 0;
   let warn = "";
   if (min && total < min) {
-    warn = `<div class="cart-warning">Todavía estás por debajo del pedido mínimo sugerido (${money(min)} + IVA). Podés seguir agregando productos.</div>`;
+    const falta = min - total;
+    warn = `<div class="cart-warning">Te faltan <strong>${money(falta)}</strong> para llegar al pedido mínimo sugerido (${money(min)} + IVA).</div>`;
   }
-  $("#cartSummary").innerHTML = `${warn}<div style="display:flex;justify-content:space-between"><span>Subtotal</span><span>${money(total)}</span></div><div style="font-size:.72rem;font-weight:400;color:#6b7280">+ IVA — precios sujetos a confirmación</div>`;
+  $("#cartSummary").innerHTML = `
+    ${warn}
+    <div class="cart-total-row">
+      <span class="cart-total-label">Subtotal</span>
+      <span class="cart-total-amount">${money(total)}</span>
+    </div>
+    <div class="cart-note">+ IVA — precios sujetos a confirmación</div>
+  `;
 }
 
 function openCart() {
