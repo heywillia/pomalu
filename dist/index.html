@@ -24,6 +24,8 @@
     </div>
     <button class="cart-btn" id="cartBtn" aria-label="Ver pedido">
       🛒 <span id="cartCount">0</span>
+      <span class="cart-btn-sep">·</span>
+      <span id="cartHeaderTotal">$0</span>
     </button>
   </div>
 </header>
@@ -53,7 +55,10 @@
 <aside class="drawer" id="cartDrawer" aria-hidden="true">
   <div class="drawer-header">
     <h2>Tu pedido</h2>
-    <button class="icon-btn" id="closeCartBtn" aria-label="Cerrar">✕</button>
+    <div class="drawer-header-actions">
+      <button class="reset-link" id="resetCartBtn" type="button">Vaciar pedido</button>
+      <button class="icon-btn" id="closeCartBtn" aria-label="Cerrar">✕</button>
+    </div>
   </div>
   <div class="drawer-body" id="cartItems"></div>
   <div class="drawer-footer">

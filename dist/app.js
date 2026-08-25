@@ -2,7 +2,7 @@
 // CONFIGURÁ ACÁ — lo único que necesitás tocar para tu marca
 // ============================================================
 const CONFIG = {
-  BUSINESS_NAME: "POMALÚ",              // TODO: poné el nombre de tu marca/negocio
+  BUSINESS_NAME: "POMALÚ",                      // TODO: poné el nombre de tu marca/negocio
   WHATSAPP_NUMBER: "5491149356044",             // TODO: tu WhatsApp con código de país, sin + ni espacios (ej: 5491122334455)
   ORDER_EMAIL: "guillenofx@gmail.com",          // TODO: email donde querés recibir los pedidos
   PAGE_SIZE: 36,
@@ -60,6 +60,7 @@ async function init() {
   $("#cartBtn").addEventListener("click", openCart);
   $("#closeCartBtn").addEventListener("click", closeCart);
   $("#overlay").addEventListener("click", closeCart);
+  $("#resetCartBtn").addEventListener("click", resetCart);
   $("#goCheckoutBtn").addEventListener("click", openCheckout);
   $("#closeCheckoutBtn").addEventListener("click", closeCheckout);
   $("#checkoutOverlay").addEventListener("click", (e) => { if (e.target.id === "checkoutOverlay") closeCheckout(); });
@@ -151,6 +152,16 @@ function setQty(id, qty) {
   renderCartUI();
 }
 
+function resetCart() {
+  if (cartEntries().length === 0) return;
+  if (!confirm("¿Vaciar todo el pedido? Esta acción no se puede deshacer.")) return;
+  state.cart = {};
+  saveCart();
+  renderCartUI();
+  renderGrid();
+  showToast("Pedido vaciado");
+}
+
 function cartEntries() {
   return Object.entries(state.cart)
     .map(([id, qty]) => ({ p: productById(Number(id)), qty }))
@@ -165,6 +176,7 @@ function renderCartUI() {
   const entries = cartEntries();
   const count = entries.reduce((s, e) => s + e.qty, 0);
   $("#cartCount").textContent = count;
+  $("#cartHeaderTotal").textContent = money(cartTotal());
 
   const itemsEl = $("#cartItems");
   if (entries.length === 0) {

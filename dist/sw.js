@@ -1,7 +1,7 @@
 // Service worker simple: cachea el shell de la app y las imágenes para que
 // el catálogo funcione instalado / con conexión débil. Al actualizar el
 // sitio, subí CACHE_VERSION para invalidar la caché vieja de los clientes.
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const CACHE_NAME = "cn-catalogo-" + CACHE_VERSION;
 const SHELL = ["./", "index.html", "style.css", "app.js", "manifest.json", "catalog.json"];
 
@@ -24,11 +24,16 @@ self.addEventListener("fetch", (e) => {
   if (url.origin !== location.origin) return;
 
   if (url.pathname.includes("/images/")) {
-    // cache-first para fotos de producto (no cambian)
+    // cache-first para fotos de producto (no cambian). Importante: solo se
+    // cachea una respuesta OK — si se cachea un 404 (p.ej. porque la foto
+    // todavía no estaba subida al repo), queda "pegado" ese error para
+    // siempre aunque la foto ya esté disponible en el servidor.
     e.respondWith(
       caches.match(e.request).then((cached) => cached || fetch(e.request).then((res) => {
-        const clone = res.clone();
-        caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
+        }
         return res;
       }))
     );
@@ -39,8 +44,10 @@ self.addEventListener("fetch", (e) => {
   e.respondWith(
     fetch(e.request)
       .then((res) => {
-        const clone = res.clone();
-        caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
+        }
         return res;
       })
       .catch(() => caches.match(e.request))
